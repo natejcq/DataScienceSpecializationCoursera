@@ -66,4 +66,25 @@ Identify problems and sources of error
 &rarr; 
 Collect the data
 
+**Some important terminology related to experiments**
+
+* Independent variable (factor) is the variable that the experimenter manipulates.It does not depend on other variables being measured, often displayed on the x-axis.
+* Dependent variables are those that are expected to change as a result of changes in the independent variable, often displayed on the y-axis. 
+
+When designing an experiment, one has to decide the variables to be manipulated to effect changes in other measured variables. Additionally, a hypothesis must be developed. 
+
+* Hypothesis is essentially the theory / educated guess on the relationship between the variables and the outcome of the experiment.
+* Sample size is the number of experimental subjects you will include in your experiment.
+
+* p-value: This is a value that tells you the probability that the results of your experiment were observed by chance. 
+
+* A confounder is an extraneous variable that may affect the relationship between the dependent and independent variables.
+
+Before moving on to collect data for the experiment, it is important to consider potential problems like a confounder or biases. To control for a confounding variable, it is good to measure it as another independent variable or keep the confounder constant in the entire sample. Balancing of confounders is done by randomization. For example, in a randomized control trial for a medication, the placebo effect could impact the results. So we may choose to blind the participants to the group they are in.
+
+* Replication means repeating an experiment with a different dataset.
+
+As single experiments results may have occurred by chance. A confounder was unevenly distributed across your groups. There was a systematic error in the data collection, there were some outliers, etc. However, if you can repeat the experiment and collect a whole new set of data and still come to the same conclusion, then the research is more strong. Replication allows better assessment of the significance of variation in the data to your conclusions. 
+
 # Big Data
+
