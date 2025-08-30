@@ -88,3 +88,16 @@ As single experiments results may have occurred by chance. A confounder was unev
 
 # Big Data
 
+Big Data are very large datasets. The characteristics of big data are described by the 3 Vs.  Volume refers to the enormous amount of data generated. Velocity describes the speed at which data is created and needs to be processed. Variety denotes the different types of data, both structured and unstructured, that are collected. 
+
+One of the main shifts in data science has been moving from structured datasets to tackling unstructured data. Structured data is what you traditionally might think of data, long tables, spreadsheets, or databases, with columns and rows of information that you can sum or average or analyze, however you like within those confines. Unfortunately, this is rarely how data is presented to you in this day and age. The datasets we commonly encounter are much messier and it is our job to extract the information we want and corralled into something tidy and structured. With the digital age and the advance of the Internet, many pieces of information that we're in traditionally collected were suddenly able to be translated into a format that a computer could record, store, search and analyze. Once this was appreciated, there was a proliferation of this unstructured data being collected from all of our digital interactions, emails, Facebook and other social media interactions, text messages, shopping habits, smartphones and their GPS tracking websites you visit, how long you are on that website and what you look at, CCTV cameras and other video sources etc.
+
+Challenges of working with big data
+
+* Quantity of raw data that we need to store and analyze.
+* Data is constantly changing and updating. By the time the analysis is completed, there is a lot of new data that has been created. 
+* The different kinds of data can be overwhelming. It can be difficult to determine which is the best source of data to answer the data question. 
+* Data is messy. Before we can start analysis it is important to clean and format the unstructured data so it can be analyzed. 
+
+Sometimes questions are best addressed using these smaller datasets, but many questions benefit from having lots and lots of data and if there is some messiness or inaccuracies in this data. The sheer volume of it negates the effect of these small errors. So, we are able to get closer to the truth even with these messier datasets. Additionally, when you have data that is constantly updating, while this can be a challenge to analyze, the ability to have real-time, up-to-date information allows you to do analyses that are accurate to the current state and make on the spot, rapid, informed predictions and decisions. One of the benefits of having all these new sources of information is that questions that weren't previously able to be answered due to lack of information.  Questions that previously were inaccessible now have newer, unconventional data sources that may allow you to answer these formerly unfeasible questions. Another benefit to using big data is that it can identify hidden correlations.
+
