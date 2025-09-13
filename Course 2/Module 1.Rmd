@@ -1,0 +1,347 @@
+---
+title: "Module 1"
+output: pdf_document
+---
+
+# Overview and History of R
+
+R is a dialect of the S language. 
+
+### What is S? 
+
+S is a language that was developed by John Chambers and others at Bell Labs. S was initiated in 1976 as an internal statistical analysis environment - originally implemented as Fortran libraries. Early versions of the language did not contain functions for statistical modeling. In 1988 the system was rewritten in C and began to resemble the system we see today. In 1993, Bell Labs gave StatSci an exclusive license to develop and sell the S language. In 2004 Insightful purchased the S language from Lucent and is the current owner. In 2006 Alcatel purchased Lucent technologies. Insightful sells its implementation of S under the name S-PLUS. In 2008, Insightful is acquired by TIBCO for $25 million. The makers of S wanted to create an interactive environment for users to work with data and perform basic analyses. Later the user could use the languahe to develop their own tools. 
+
+### A short history of R
+
+R was created in 1991 by Ross Ihaka and Robert Gentleman. In 1993, R was announced to the public for the first time. In 1995, Martin Machler convinced Ross and Robert to use the GNU General Public License; thus making it a free software. In 1996, a mailing list was created for developers using R. This led to the formation of the R core group in 1997; this group controls the source code of R
+
+### Features of R
+* Syntax is very similar to S, making migration easier.
+* Semantics are superficially similar to S, but in reality are quite different. 
+* Can run on any standard computing platform or operating system. 
+* There is active development with frequent bugfix releases. 
+* The software itself is quite lean; the functionalities are organized in modular packages
+* It has much better graphic and visualization capabilities when compared to most other stat packages. 
+* While it is useful for working interactively (Markdown and Console), it is also a powerful programming language to develop new tools
+* It has a vibrant and active user community. 
+* It is free!! 
+
+### What is meant by "free software"? 
+
+Free software, libre software, libreware sometimes known as freedom-respecting software is computer software distributed under terms that allow users to run the software for any purpose as well as to study, change, and distribute it and any adapted versions.Free software is a matter of liberty, not price; all users are legally free to do what they want with their copies of free software (including profiting from them) regardless of how much is paid to obtain the program.
+
+* The freedom to run the program, for any purpose.
+* The freedom to study how the program works; adapt it to your needs. Access to the source code is a precondition for this.
+* The freedom to redistribute copies so you can help your neighbour.
+* The freedom to improve the program, and release your improvements to the public so that the whole community benefits.
+
+### Drawbacks of R
+
+* Essentially based on a 40 year old technology.
+* Minimal built-in support for dynamic or 3D graphics.
+* New functionality is based on consumer demand and user contributions. 
+* Objects must be stored in physical memory; however there are methods to deal with this. 
+* Not ideal for all situations.
+
+### Design of the R system
+
+The R system divided into two conceptual parts: base R and everything else. 
+R functionality is divided into a number of packages. 
+
+* The "base" R system contains the **base** package required to run R, and contains the most fundamental actions
+* The other packages contained in the base system include utils, stats, datasets, graphics, grDevices, grid, methods, tools, parallel, compiler, splines, tcltk, stats4. 
+* There are also recommended packages like boot, class, cluster, codetools, foreign, KernSmooth, lattice, mgcv, nime, rpart, survival, MASS, spatial, nnet, Matrix. 
+
+There are about 4000 packages on CRAN that have been developed by users and programmers around the world. There are also many packages associated with the Bioconductor project. Additionally, a lot of people also make packages available on their personal websites; there is no reliable way to keep track of how many packages exist in this way. 
+
+# R console input and evaluation
+
+Expressions can be typed into the R prompt for evaluation. The <- operator is used to assign a value to a variable
+```{r}
+x <- 1
+x
+
+msg <-"Hello"
+```
+Entering the name of a variable in the console will display its value. One can also use the print( ) function.
+```{r}
+print(x)
+```
+When a complete expression is entered at the prompt, it is evaluated and the result of the expression is returned. It may sometimes be auto-printed (e.g. when entering a variable, we get its value). 
+```{r}
+msg
+```
+[1] indicates that msg has one element and that it is the string Hello.
+
+The colon is used to create a sequence of integers. 
+```{r}
+x <- 6:25
+x
+```
+
+The result has [1] before printing the elements. 
+
+# Data types in R 
+
+### Objects and Attributes
+
+R has  five basic categories of objects: Character, numeric, integer, complex, logical. The most basic object in R is a vector. A vector can only contain objects of the same class. The only exception is a list; which can be a collection of objects belonging to different classes.
+
+Numbers in R are generally treated as numeric objects i.e. double precision real numbers. If you need an integer, specify the L suffix. 1 will return a numeric type while 1L will return an integer type. R also lets you use a special number called Inf. It can be used in regular calculations. 1/0 will return Inf while 1/Inf will return 0. NaN stands for undefined values. 0/0 will return NaN. 
+
+Objects in R can have attributes associated with them. Attributes are: names or dimnames, dimensions (for arrays and matrices), class, length and any other attribute that is user-defined. Attributes of an object can be accessed using the attributes( ) function.
+
+### Vectors and Lists
+
+The c( ) function is used to create vectors of objects. It concatenates the elements together.
+```{r}
+x <- c(0.5,0.6)          ##numeric
+x <- c(TRUE, FALSE)      ##logical
+x <- c(T,F)              ##logical
+x <- c("a", "b", "c")    ##character
+x <- 9:29                ##integer
+x <- c(1+0i, 2+4i)       ##complex
+```
+
+We can also use the vector( ) function to create a vector of a certain type and length. In the example below we see a numeric vector of size 10. It will be initialized with the default value of its type. For numeric the default is 0. 
+```{r}
+x <- vector("numeric", length = 10)
+x
+```
+Apart from the `:` operator, the seq function can also be used to create sequences of numbers. 
+```{r}
+seq(0,10, by=0.5)
+```
+The by argument is used to specify the value by which we should increment / decrement from one element to the next. So the code above gives a vector that starts at 0 and goes up to 10, increasing by 0.5 each time.
+Sometimes, we may only want a certain number of elements, regardless of the increment. The code below gives a vector that starts from 5 (first element is 5) and ends at 10 with length 30 (thirtieth element is 10). It calculates the appropriate value to increment by in order to satisfy this condition. 
+```{r}
+seq(5,10, length=30)
+```
+
+```{r}
+my_seq <- 10:15   #This is a vector having 6 elements
+
+seq_along(my_seq)
+```
+seq_along is a handy function when you want to create a vector starting from 1 upto a certain length. In the above code, we can see it creates a vector of the exact same size as the argument that it gets passed.
+
+When you mix different types of objects in a single vector, the general rule is that R will try to coerce the vector to get each element into the same class. This is called coercion.
+```{r}
+y <- c(1.7, "a")
+y
+
+z <- c(TRUE, 3)
+z
+
+x <- c("a", FALSE)
+x
+```
+We can see in the first example that the resultant vector is a vector of strings. This is because  R can convert 1.7 into character but not convert "a" into a number. In the second example, the logical value TRUE is converted to the number 1; FALSE would have been converted to zero. In the third example, the logical value FALSE is converted to a string.
+
+### Logical Vectors
+
+```{r}
+num_vect <- c(0.5, 55, -10, 6)
+tf <- num_vect<1
+```
+This created a vector of numbers and then a second vector with the result of the logical expression <1. So the result we get is a logical vector, with each element being either TRUE or FALSE. The value depends on the result of the expression.
+
+```{r}
+num_vect >= 6
+```
+
+### Character vectors
+```{r}
+my_char <- c("My", "name", "is", "Stewart")
+my_char
+```
+```{r}
+paste(my_char, collapse =" ")
+```
+The collapse argument to the paste() function tells R that when we join the elements of the my_char vector, they should be separated with single spaces.
+
+### Classes and coercion
+
+```{r}
+x <- 0:6
+x
+class(x)
+```
+
+```{r}
+as.logical(x)
+as.character(x)
+```
+Explicit coercion can be done using the as.* functions in R.
+
+```{r}
+x <- c("A", "B", "C")
+as.numeric(x)
+as.logical(x)
+```
+If a conversion is attempted that is not possible, we get NaN and corresponding warnings.
+
+Lists are a special type of vector that can contain elements of different classes
+```{r}
+x <- list(1, "a", TRUE, 1+2i, FALSE)
+x
+```
+Here you can see that the first element is a vector of integers, the second is a vector of characters, the third is a vector of logical TRUE and so on. Elements of a list will have double brackets around them.
+
+```{r}
+x <- list("a", "b", 0.5, 1, FALSE, "d")
+x
+```
+### Matrices
+Matrices are vectors with a dimension attribute. The dimension attribute is an integer vector of length 2 (nrow, ncol) 
+```{r}
+m <- matrix(nrow = 2, ncol = 3)
+m
+```
+```{r}
+dim(m)
+```
+```{r}
+attributes(m)
+```
+Matrices are constructed column-wise, so entries can be thought of starting in the upper-left corner and running down the columns. 
+```{r}
+m <- matrix(1:6, nrow=2, ncol=3)
+m
+```
+Matrices can also be created by column-binding or row-binding with cbind( ) and rbind( )
+```{r}
+x <- 1:3
+y <- 10:12
+cbind(x,y)
+```
+```{r}
+rbind(x,y)
+```
+
+### Factors
+
+Factors are used to represent categorical data. Factors can be unordered or ordered. Gender (male, female) would be an unordered factor wheras something like a grade (A, B, C, D) is ordered because it has a rank. One can think of of a factor as an integer vector where each integer has a label. Factors are treated specially by modeling functions like lm( ) and glm( ). Using factors with labels is better than using integers because factors are self-describing: having a variable with values "male" and "female" is better than a variable with values 1 and 2.
+
+A factor can be created using the factor( ) function in R. Its input should usually be a character vector 
+```{r}
+x <- factor(c("yes", "yes", "no", "yes", "no"))
+x
+```
+The function table will give a frequency count of how many elements of each level are present in the factor.
+```{r}
+table(x)
+```
+Unclass reduces the factor to an integer vector. In the example below, yes is coded as 2 and no is coded as 1. A factor at its core is an integer vector with the levels attribute. 
+```{r}
+unclass(x)
+```
+The order of the levels of a factor can be set by using the levels( ) argument to a factor( ). This can be important in linear modeling because the first level is used as the baseline level. If levels are not mentioned then R processes them alphabetically. So because N comes before Y, no would be the baseline level and yes will be the second level 
+```{r}
+x <- factor(c("yes", "yes", "no", "yes", "no", "yes", "no"),
+            levels = c("yes", "no"))
+x
+```
+In the factor initialized above, yes is the baseline level and no is the second level. It can be verified using the unclass function.
+```{r}
+unclass(x)
+```
+
+### Missing values
+
+Missing values in R are denoted by either NA or NaN. NaN is used for undefined mathematical operations.
+And NA is pretty much used for everything else. There's a function in R called is.na and is.nan which is used to test objects to see if there are missing values in that object. NA values also have a class, so there can be integer NA, character NA, etc. A NaN value is also NA but the converse is not true
+```{r}
+X <- c(1, 2, NA, 10, 3)
+is.na(X)
+```
+```{r}
+is.nan(X)
+```
+The example below illustrates how NaN is considered to be NA, but NA is not a NaN 
+```{r}
+Y <- c(1, 2, NA, NaN, 4)
+is.na(Y)
+is.nan(Y)
+```
+
+```{r}
+y <- rnorm(1000)
+z <- rep(NA,1000)
+my_data <- sample(c(y,z), 100)
+my_na <- is.na(my_data)
+my_na 
+```
+Trying to use the == operator to check for NAs
+```{r}
+my_data == NA
+```
+The reason you got a vector of all NAs is that NA is not really a value, but just a placeholder for a quantity that is not available. Therefore the logical expression is incomplete and R has no choice but to return a vector of the same length as my_data that contains all NAs. 
+
+To calculate how many NAs in my_data : The trick is to recognize that underneath the surface, R represents TRUE as the number 1 and FALSE as the number 0. Therefore, if we take the sum of a bunch of TRUEs and FALSEs, we get the total number of TRUEs.
+```{r}
+sum(my_na)
+```
+```{r}
+my_data
+```
+
+### Data Frames
+
+Data frames are used to store tabular data. They are represented as a special type of list where every element of the list has the same length. Each element of the list can be thought of as a column and the length of each element of the list is the number of rows. Unlike matrices, data frames can store different classes of objects in each column. Data frames also have a special attribute called row.names( )
+```{r}
+x <- data.frame(foo = 1:4, bar = c(T, T, F, F))
+x
+```
+```{r}
+nrow(x)
+ncol(x)
+```
+
+### Names
+
+R objects can also have names. This can be used for writing readable code and self-describing objects. 
+```{r}
+x <- 1:3
+names(x) <- c("foo", "bar", "norf")
+x
+```
+Lists can also have names
+```{r}
+x <- list(a=1, b=2, c=3)
+x
+```
+Names for matrices can be set as follows. Provide a list with two vectors, one for the rows and one for columns.
+```{r}
+m <- matrix(1:4, nrow=2, ncol=2)
+dimnames(m) <- list(c("a", "b"), c("c", "d"))
+m
+```
+We can also convert a vector into a matrix by setting dimensions for it 
+```{r}
+my_vector <- 1:20
+my_vector
+dim(my_vector)
+```
+```{r}
+dim(my_vector) <- c(4,5)
+my_vector
+class(my_vector)
+```
+
+
+# Reading and Writing Data in R: The basics
+
+### Reading Tabular data
+The read.table() and read.csv() functions are 
+
+### Reading large tables
+
+### Textual data formats 
+
+
+### Connections : Interfaces 
+```{r}
+```
+
+# Subsetting
