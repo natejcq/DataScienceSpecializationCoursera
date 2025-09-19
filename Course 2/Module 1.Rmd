@@ -351,13 +351,155 @@ For small to moderately sized datasets, you can usually call read.table() withou
 
 ### Reading large tables
 
+With much larger datasets, some of the following points can help to ensure quicker execution. Providing as much information to R as possible by providing the arguments mentioned above. Additionally, making a rough calculation of the memory required to store the dataset. if there is not enough RAM, it is best to not execute it. Set comment.char = "" if there are no comments in the data file. Setting nrows does not make R run faster but helps with memory usage; its alright to do a mild overestimate. A The colClasses argument can make read.table() much faster. In order to use this option, it is necessary to know the class of each column in the data. A quick way to figure out classes is the following:  
+```
+initial <- read.table("datatable.txt", nrows=100)  #read only a small number of rows
+classes <- sapply(initial, class)                  #ascertain the classes
+tabAll <- read.table("datatable.txt", colClasses=classes)
 
+```
+
+In general, when using R it is useful to know some things about the system itself. How much memory and RAM is available? What other applications are in use? Are there other users logged in to the system? What is the operating system? Is the OS 32 bit or 64 bit? 
+
+A rough calculation of Memory requirements: I have a data frame with 1,500,000 rows and 120 columns, all of which are numeric data. Roughly how much memory is required to store this data frame? 
+
+The memory required to store this data frame is approximately:
+
+$1,500,000 \times 120 \times 8 \text{ bytes/numeric} = 1,440,000,000 \text{ bytes}$
+
+$\frac{1,440,000,000}{1024^2} \approx 1,373.29 \text{ MB}$
+
+$\frac{1,373.29}{1024} \approx 1.34 \text{ GB}$
 
 ### Textual data formats 
 
+The functions dump() and dput() are useful because the resulting textual format is editable, and in the case of corruption, potentially recoverable. Unlike writing out a table or a CSV file, dump and dput preserve the metadata (sacrificing some of the readability), so that other users do not need to specify it all over again. Data in a tectual foramt works much better with version-tracking systems like SVN and Git as compared to csv or tsv files. One of the downsides of this format is that it is not very space-efficient. 
 
-### Connections : Interfaces 
+The dput() function takes an arbitrary R object, it will take most types of R objects and will create some R code that will essentially reconstruct the object in R.
+
 ```{r}
+y <- data.frame(a=1, b="a")
+dput(y)
+```
+Often, printing the result of a dput is not very useful. Its more common to save the result of dput into an R file so it can be executed to generate the object later. For deparsing multiple R objects at once, we can use the dump() function. You pass a character vector which contains the names of the objects. 
+```{r}
+x <- "foo"
+y <- data.frame(a = 1, b = "a")
+dump(c("x", "y"), file = "data.R")
+```
+The dump is saved in data.R. Now we can delete the objects and then regenerate them using the result of the dump.
+```{r}
+rm(x,y)           #code to delete objects
+source("data.R")
+y
+```
+
+### Connections : Interfaces with the outside world
+
+Data are read in using connection interfaces. Connections can be made to files or to other more exotic things. The functions file, gzfile (file compressed with gzip), bzfile (file compressed with bzip2), url (webpage) are some common connections.
+
+Some of the arguments of the file function are as follows: 
+
+* description : Name of the file
+* open: a code indicating "r" for read-only, "w" for writing (and initializing new files), "a" for appending, "rb", "wb" and "ab" to read, write or append in binary mode
+* blocking: If set to TRUE, then  functions using the connection do not return to the R evaluator until the read/write is complete. In non-blocking mode, operations return as soon as possible, so on input they will return with whatever input is available (possibly none) and for output they will return whether or not the write succeeded.
+
+In general, connections are powerful tools that let you navigate files or other external objects. In practicem  we don't often deal with the connection interface directly. 
+```{r}
+con <- file("foo.txt", "r")
+data <- read.csv(con)
+close(con)
+```
+is the same as
+```{r}
+data <- read.csv("foo.txt")
+```
+
+The writeLines function takes a character vector and writes each element one line at a time. To read lines from files or webpages, we can use the readLines function
+```{r}
+con <- url("https://theconversation.com/what-owning-a-cat-does-to-your-brain-and-theirs-264396", "r")
+x <- readLines(con)
+head(x)
 ```
 
 # Subsetting
+
+There are a number of operators that can be used to extract subsets of R objects. The [ always returns an object of the same class as the original; it can be used to select more than one element. The [[ is used to extract elements of a list or a data frame; it can only be used to extract a single element and the class of the returned object will not necessarily be a list or data frame. The $ is used to extract elements of a list or data frame by name; the semantics are same as the [[. 
+
+```{r}
+x <- c("a", "b", "c", "d", "a")
+x[1]
+x[2:4]
+```
+This was an example of subsetting the vector x using a numeric index. We can also do subsetting with a logical index. 
+```{r}
+x[x>"b"]
+```
+Here, the comparison is based on lexicographical ordering. Letters greater than "b" means all letters from c through to z; the subset is formed by only those elements that return TRUE based on this condition.
+
+### Subsetting - Lists
+
+```{r}
+x <- list(foo=1:4, bar=0.6)
+x[1]
+```
+Because the single square bracket will always return the same class. So we get a list with an element named foo. foo contains the sequence 1 to 4.
+
+```{r}
+x[[1]]
+```
+
+When using the double brackets, we don't get a list but just the sequence 1 through 4. 
+
+```{r}
+x$bar
+x$foo
+```
+The dollar sign gives us the element associated with the given name. The advantage with this method is you do not need to know the location (index) of the element. 
+
+To extract multiple elements of a list, the single bracket operator is used. The double bracket and dollar sign can only return a single list element. 
+
+```{r}
+x <- list(foo=1:4, bar=0.6, baz="hello")
+x[c(1,3)]
+```
+The [[ operator can be used with computed indices, while $ can only be used with literal names. 
+```{r}
+x <- list(foo=1:5, bar=2.6, baz="hello world")
+name <- "foo"
+x[[name]]
+```
+```{r}
+x$name
+```
+For subsetting nested elements in a list, one can use the [[ operator. 
+```{r}
+x <- list(a = list(10, TRUE, 14.5), b=c(3.14, 2.81))
+x[[1]][[3]]
+x[[c(2,1)]]
+```
+This would return the third element of the first element of x and first element of the second element of x.
+
+### Subsetting - Matrices
+
+Matrices can be subsetted using a pair of indices. The first index will be the row index and the second one will be the column index. You don't meed to always specify both indices of a matrix.
+```{r}
+x <- matrix(1:6, 2,3)
+x
+```
+```{r}
+x[1,2]       #first row second element
+x[2, ]       #entire second row
+x[ ,3]       #entire third column
+```
+By default, when a single element of a matrix is retrieved, we get a vector of length 1 rather than a 1x1 natrix. This behaviour can be turned off by setting drop=FALSE. Similatly, when subsetting a single column or a single row, we get a vector rather than a matrix. Depending on what is the required output, we can set the value of the drop argument
+```{r}
+x[1,2, drop=FALSE]
+x[1, , drop=FALSE]
+```
+
+### Subsetting - Partial matching
+
+
+
+
