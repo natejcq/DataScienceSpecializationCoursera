@@ -332,10 +332,26 @@ class(my_vector)
 
 # Reading and Writing Data in R: The basics
 
+The read.table() and read.csv() functions are used to read tabular data. They are the most commonly used functions for reading data into R. They can read any kind of files that are formatted as rows and columns and return a data frame in R. The function readLines() is for reading lines of a text file; this returns text as a character vector in R. The function source() is used for reading R code. The dget() function is also used for reading R code files, specifically for R objects that have been deparsed into text files. The unserialize() function is used to read R objects in binary form. The analogous functions for writing data are write.table(), writeLines(), dump(), dput(), save() and serialize().
+
 ### Reading Tabular data
-The read.table() and read.csv() functions are 
+
+The read.table function is the most commonly used for reading data into R. It has some important arguments. 
+
+* file: the name of a file, or a connection
+* header: logical, indicating if the file has a header line
+* sep: a string, indicating how the columns are separated
+* colClasses: a character vector indicating the class of each column in the dataset
+* nrows: the number of rows in the dataset
+* comment.char: a character string indicating the comment character
+* skip: integer, the number of lines to skip from the begeinning
+* stringAsFactors: logical, should the character variables be coded as factors? It defaults to true,
+
+For small to moderately sized datasets, you can usually call read.table() without specifying any other arguments. R will automatically skip lines that begin with a #, figure our how many rows are there (and how much memory needs to be allocated), figure what type of variable is in each column of the table. However, telling R all of these things directly makes it run faster and more efficiently. This is why its important to specify these arguments when the dataset is large. read.csv is identical to read.table except that the default separator is a comma. For read.table the default separator is a single space.  
 
 ### Reading large tables
+
+
 
 ### Textual data formats 
 
