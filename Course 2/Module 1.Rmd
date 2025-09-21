@@ -158,8 +158,7 @@ my_char
 ```{r}
 paste(my_char, collapse =" ")
 ```
-The collapse argument to the paste() function tells R that when we join the elements of the my_char vector, they should be separated with single spaces.
-
+The collapse argument to the paste() function tells R that when we join the elements of the my_char vector, they should be separated with single spaces. collapse is used when  we have a single vector; whose elements need to be joined. sep is used when we have multiple vectors that need to be joined.
 ### Classes and coercion
 
 ```{r}
