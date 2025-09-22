@@ -159,6 +159,7 @@ my_char
 paste(my_char, collapse =" ")
 ```
 The collapse argument to the paste() function tells R that when we join the elements of the my_char vector, they should be separated with single spaces. collapse is used when  we have a single vector; whose elements need to be joined. sep is used when we have multiple vectors that need to be joined.
+
 ### Classes and coercion
 
 ```{r}
@@ -499,6 +500,42 @@ x[1, , drop=FALSE]
 
 ### Subsetting - Partial matching
 
+Partial matching of names is allowed with the [[ and $ 
+```{r}
+x <- list(aardvark = 1:5)
+x$aa
+```
+```{r}
+x[["a", exact = FALSE]]
+```
 
+### Subsetting - Removing missing values
 
+```{r}
+x <- c(1, 2, NA, 4, NA, 6)
+```
+One method is to create a logical vector which tells you where the NA's are and so that you can remove them by sub-setting. 
+```{r}
+bad <- is.na(x)
+x[!bad]
+```
+When there are multiple things (lists / vectors / matrices) and we want to clean them up: 
+```{r}
+x <- c(1, 2, NA, 4, NA, 5)
+y <-c("a", "b", NA, "c", NA, "d")
+good <- complete.cases(x,y)
+good
+```
+```{r}
+x[good]
+y[good]
+```
+If both x and y have missing values at different places, good will return TRUE only for those positions that had valid values in both vectors
+```{r}
+x <- c(1, 2, NA, 4, NA, 5)
+y <-c("a", NA, "b", "c", NA, "d")
+good <- complete.cases(x,y)
+x[good]
+y[good]
+```
 
