@@ -538,4 +538,39 @@ good <- complete.cases(x,y)
 x[good]
 y[good]
 ```
+# Vectorized Operations 
+
+Vectorized operations is one of the features of the R language that makes it easy to use on the command line without needing to do lots of looping. Many operations in R are vectorized making the code more efficient, concise, and easier to read. It allows computation in parallel
+```{r}
+x <- 1:4; y <- 6:9
+x + y
+```
+```{r}
+x * y 
+```
+Simply doing x + y will add each element of x with its corresponding element of y. If vectorized operations were not available, this would need a loop to go through x[1] + y[1] then x[2] + y[2] and so on. In R we can use the mathematical operators on vectors directly.
+```{r}
+x > 2
+```
+```{r}
+y == 8 
+```
+We can also use logical operators in vectorized operations. 
+
+### Vectorized Matrix Operations
+
+```{r}
+x <- matrix(1:4, 2, 2)
+y <- matrix(rep(10,4), 2, 2)     #rep means repeat 10 four times
+x
+y
+```
+Lets try multiplying these two matrices
+```{r}
+x * y
+```
+The result gave us an element-by-element multiplication. For true matrix multiplication, use % before and after the * operator.
+```{r}
+x %*% y 
+```
 
