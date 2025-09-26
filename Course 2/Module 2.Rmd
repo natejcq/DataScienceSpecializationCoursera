@@ -152,3 +152,170 @@ The return signals that a function should exit and return a given value. It is s
 
 # Functions
 
+Functions are created by using the function( ) directive and are stored as R objects like anything else. In particular, they are R objects of the class "function". 
+```
+f <- function(<arguments){
+      ##Do something interesting
+}
+```
+Some important points
+
+* Functions can be passed as arguments to other functions. 
+* Functions can be nested, so that you can define a function inside of another function. 
+* The return value of a function is the last expression in the function body to be evaluated
+
+Lets take an example of a simple additive function. 
+```{r}
+add2 <- function(x,y){
+          x+y
+}
+```
+In this function, we did not explicitly use return because R will automatically return the last expression. This function had only one expression which is the first / last.  
+```{r}
+add2(4, 7)
+add2(-1, 3)
+```
+
+## Arguments in functions
+
+Functions have named arguments which potentially have default values 
+
+* The formal arguments are the arguments included in the function definition.
+* The formals() function returns a list of all the formal arguments of the function.
+* Not every function call in R makes use of all the formal arguments.
+* Function arguments can be missing or have default values.
+
+A slightly more complicated function, that will subset a vector of numbers and return a subset of those numbers that are greater than 10. Here, a vector is the argument.
+```{r}
+# A vector for illustrations
+myvec <- (c(3,5,11,6,13,19,8))
+
+above10 <- function(x){
+  vector1 <- x > 10
+  x[vector1]
+}
+above10(myvec)
+```
+This can be generalized into a more useful function, with no value hardcoded in it. Now this function has two named arguments; a vector and the integer. 
+```{r}
+above <- function(x,n){
+  vector1 <- x > n
+  x[vector1]
+}
+above(myvec, 7)
+above(myvec, 15)
+
+```
+The function can be improved by specifying a default value for n to avoid errors if a user forgets to enter the value
+```{r}
+above <- function(x,n=10){
+  vector1 <- x > n
+  x[vector1]
+}
+above(myvec, 7)
+above(myvec, 15)
+above(myvec)
+```
+
+### Argument matching
+
+R functions arguments can be matched positionally or by name. So the following calls to sd are all equivalent.
+```{r}
+mydata <- rnorm(100)
+sd(mydata)
+sd(x = mydata)
+sd(x = mydata, na.rm = FALSE)
+sd(na.rm = FALSE, x = mydata)
+```
+Even though it is permitted, mixing up the positions of function arguments is not recommended as it becomes more confusing to the person reading or reviewing the code.
+
+You can mix positional matching with matching by name .When an argument is matched by name, it is "taken out" of the argument list and the remaining unnamed arguments are matched in the order that they are listed in the function definition
+```{r}
+args(lm)
+```
+The following two function calls are equivalent.
+```
+lm(data = mydata, y-x, model=FALSE, 1:100)
+lm(y-x, mydata, 1:100, model=FALSE)
+```
+
+Most of the time, named arguments are useful on the command line when you have a long argument list and you want to use the defaults except for an argument near the end of the list. Named arguments can also help if you remember the name of the argument and not its position in ht e argument list.
+
+Function arguments can be partially matched, which is useful for interactive work. The order of operations when given an argument is: Check for exact match of a named argument &rarr; Check for a partial match &rarr; Check for a positional match. 
+
+### Lazy evaluation of function arguments 
+
+Arguments to functions are evaluated lazily, so they are only considered when needed. 
+```{r}
+f <- function(a,b) {
+    a^2
+}
+f(2)
+f(2,4)
+```
+Both the function calls execute without throwing an error because the function never actually uses the argument b. 2 will get positionally matched to a. 
+```{r}
+f <- function(a,b) {
+    print(a)
+    print(b)
+}
+f(30)
+```
+The '30' got printed first before the error was triggered. This is because the b did not have to be evaluated until after the print(a). Once the function tried to evaluate print(b) it had to throw an error.
+
+### The "..." Argument
+
+The ... argument indicates a variable number of arguments taht are passed on to other functions. ... is often used when extending another function and you don't want to copy the entire argument list of the original function.
+```{r}
+myplot <- function(x,y,type="1", ...) {
+        plot(x, y, type = type, ...)
+}
+```
+Generic functions use ... so that extra arguments can be passed to methods. 
+
+The ... argument is also necessary when the number of arguments passed to the function cannot be known in advance. 
+```{r}
+args(paste)
+```
+Paste function is used to concatenate different strings together to create one string or a vector of strings. It can take a variable number of arguments depending on how many strings are there. Similar to paste, cat will concatenate a number of strings and paste the result to a file or the console
+```{r}
+args(cat)
+```
+One catch with the ... is that any arguments that appear after it in the argument list must be named and cannot be partially matched.
+
+
+## Some practice on writing and improving functions
+
+A function to compute the mean of each column in a dataframe.
+```{r}
+colmean <- function(x){
+    cols <- ncol(x)
+    means <- numeric(cols)
+    for(i in 1:cols){
+      means[i] <- mean(x[, i]) 
+    }
+    means
+}
+```
+
+Using the airquality dataset to test the function.
+```{r}
+colmean(airquality)
+```
+We do not get valid numbers for the firsst two columns. If any of the entries in a row or column are NA, then the result of mathematical operations like sum, mean, etc on those rows or columns will also return NA. A simple solution to this problem is to first eliminate the rows or entries having NA values in the dataset. We can add a boolean argument to the function; if TRUE the NAs will be removed from the dataset. The default value is set to TRUE as this is a common operation. 
+```{r}
+colmean <- function(x, removeNA=TRUE){
+    cols <- ncol(x)
+    means <- numeric(cols)
+    for(i in 1:cols){
+      means[i] <- mean(x[, i], na.rm = removeNA) 
+    }
+    means
+}
+```
+ In this function, we call the mean on each column. So the NA values for each column (which is interpreted as a vector) are removed. Because its being applied on the column, just the values which are NA in that column get removed rather than the entire row having an NA value.
+```{r}
+colmean(airquality, TRUE)
+```
+ 
+ 
