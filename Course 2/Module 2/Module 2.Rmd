@@ -259,7 +259,7 @@ f <- function(a,b) {
     print(a)
     print(b)
 }
-f(30)
+##f(30)
 ```
 The '30' got printed first before the error was triggered. This is because the b did not have to be evaluated until after the print(a). Once the function tried to evaluate print(b) it had to throw an error.
 
@@ -283,6 +283,117 @@ args(cat)
 ```
 One catch with the ... is that any arguments that appear after it in the argument list must be named and cannot be partially matched.
 
+# Scoping rules
+
+## Symbol binding
+
+How does R know which value to assign to which symbol? When I type 
+```{r}
+lm <- function(x) {x * x}
+lm
+```
+how does R know what value to assign to lm? lm also exists in the stats package of R. 
+
+When R tries to bind a value to a symbol, it searches through a series of environments to find the appropriate value. When you are working on hte command line and need to retrieve the value of an R object, the order is roughly: Search the global environment for a symbol name matching the one requested  &rarr; Search the namespaces of each of the packages on the search list. The search list can be found by using the search() functions. 
+```{r}
+search()
+```
+The global environment is the workspace; consisting of all the things you've defined or loaded into R. If there is a symbol there that matches the name requested, then it will take that symbol. So in this case, it takes the value of lm from the environment as we have defined it above.
+
+The global environment is equivalent to the user's workspace and is always the first element of the search list and the base package is always the last. The order of the packages on the search list matters! Users can configure which packages get loaded on startup so we cannot assume that there will be a set list of packages available. When a user loads a package with library, the namespace of that package gets put in position 2 of the search list (by default) and everything else gets shifted down the list. R has different namespaces for functions and non-functions
+
+##  R Scoping rules
+
+The scoping rules in R are what make it different from the original S language.
+
+* Scoping rules determine how a value is associated with a free variable in a function.
+* R uses lexical scoping or static scoping. A common alternative is dynamic scoping.
+* Related to the scoping rules is how R uses the search list to bind a value to a symbol.
+* Lexical scoping turns out to be particularly useful for simplifying statistical calculations.
+
+Consider the following situation
+```{r}
+f <- function(x,y) {
+    x^2 + y / z
+}
+```
+This function has 2 formal arguments x and y. In the body of the function there is another symbol z. In this case, z is called a free variable. The scoping rules of a language determine how values are assigned in free variables. Free variables are not formal arguments and are not local variables (assigned inside the function body). Lexical scoping in R means that the values of free variables are *searched for in the environment in which the function was defined.*
+
+* If the value of a symbol is not found in the environment in which a function is defined, then the search is continued in the parent environment.
+* The search continues down the sequence of parent environments till we hit the top-level environment; this is usually the global environment or the namespace of a package.
+* After the top-level environment, the search continues down the search list till we hit the empty environment. If the value for a given symbol cannot be found once the empty environment is arrived at, an error is thrown.
+
+### What is an environment? 
+
+* An environment is a collection of symbol, value pairs i.e. x is a symbol and 10 might be its value.
+* Every enviornment has a parent environment; it is possible for an environment to have multiple "children". 
+* The only environment without a parent is the empty environment.
+* A function + an environment = a closure or function closure. 
+
+### Why is scooping important? 
+
+Typically, a function is defined in the global environment, so that the values of free variables are found in the user's workspace. This behaviour is logical for most people and is usually the "right thing to do". However in R you can have function defined _inside other functions_. Languages like C don't let you do this. 
+
+```{r}
+make.power <- function(n) {
+    pow <- function(x) {
+      x^n
+    }
+    pow
+}
+```
+This function returns another function as its value. make.power returns pow. In pow, x is the named argument while n is a free variable. However, n is defined in the make.power() function. Because make.power() is the environment in which pow() is defined, it will find the value of n in that environment
+```{r}
+cube <- make.power(3)
+square <- make.power(2)
+```
+Result of make.power(n) is a function. This function will take a value and raise it to the nth power
+```{r}
+cube(3)
+square(3)
+```
+### Exploring a function's environment
+
+The ls function can be used to retrieve the environment of a function.
+```{r}
+ls(environment(cube))
+get("n", environment(cube))
+```
+### Understanding the difference in lexical and dynamic scoping
+
+What would be the value of f(3) 
+```{r}
+y <- 10
+
+f <- function(x) {
+      y <- 2
+      y^2 + g(x) 
+}
+g <- function(x) {
+      x*y  
+}
+```
+In the f() function, y and g are free variables. In the g() function y is a free variable. With lexical scoping, he value of y in the function g is looked up in the environment in which the function was defined; so for g() the value of y is 10. With dynamic scoping, the value of y is looked up in the environment in which the function was called. So the value of y will be 2. 
+```{r}
+f(2)     ##Lexical scopimg
+```
+When a function is defined in the global environment, and is subsequently called in the global environment then the defining and calling environment is the same. So both lexical and dynamic scoping give the same results. 
+
+### Consequences of lexical scoping
+
+In R, all objects are stored in memory. All functions must carry a pointer to their respective defining environments, which could be anywhere. 
+
+### Application : Optimization
+
+# Coding Standards
+
+* Use a Text Editor: Always write your R codein a text editor and save it as a text file. This ensures compatibility and accessibility for others.
+* Indent Your Code: Proper indentation is crucial for readability. Indent blocks of code to visually represent control flow. A common recommendation is to use at least four spaces for indentation.
+* Limit Code Width: Keep the width of your code to a maximum of 80 columns. This helps maintain readability and prevents horizontal scrolling.
+* Limit Function Length: Functions should perform a single task. Avoid making functions too long; ideally, they should fit on one screen. This aids in debugging and understanding the code structure.
+
+
+# Date and Time 
 
 ## Some practice on writing and improving functions
 
