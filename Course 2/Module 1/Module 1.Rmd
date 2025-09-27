@@ -574,3 +574,31 @@ The result gave us an element-by-element multiplication. For true matrix multipl
 x %*% y 
 ```
 
+# Workspaces and Files
+
+To see the current working directory, we use the getwd() method. 
+```{r}
+getwd()
+```
+To see all the files in the current working directory, we can use either the dir() or list.files() methods
+```{r}
+list.files()
+```
+
+To list out the objects in the current workspace / environment we use ls()
+```{r}
+ls()
+```
+dir.create() can be used to create a new directory. We can change the working directory by using the setwd() method. We can create new files using the file.create().
+```{r}
+old.dir <- getwd()
+dir.create("testdir")
+setwd("testdir")
+file.create("mytest.R")
+list.files()
+file.exists("mytest.R")
+file.info("mytest.R")
+## Rename it to mytest2.R
+file.rename("mytest.R", "mytest2.R")
+```
+ To check if a file exists in the working directory, the method file.exists() will return a boolean value. It can be useful to check if a file exists before processing it. We can access information about a file by using file.info(). To rename a file, you can use file.rename("mytest.R", "mytest2.R"). The old name is the first argument while the new name is the second argument. Copies of a file can be created using file.copy()
