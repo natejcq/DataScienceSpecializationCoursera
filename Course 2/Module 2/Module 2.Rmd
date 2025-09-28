@@ -429,4 +429,72 @@ colmean <- function(x, removeNA=TRUE){
 colmean(airquality, TRUE)
 ```
  
- 
+## Notes from the assignment
+
+Write a function named 'pollutantmean' that calculates the mean of a pollutant (sulfate or nitrate) across a specified list of monitors. The function 'pollutantmean' takes three arguments: 'directory', 'pollutant', and 'id'. Given a vector monitor ID numbers, 'pollutantmean' reads that monitors' particulate matter data from the directory specified in the 'directory' argument and returns the mean of the pollutant across all of the monitors, ignoring any missing values coded as NA
+
+###Learnings 
+
+* The dollar sign is a common way to access columns in a data frame. For example, if you have a data frame df and you want to access the column named sulfate, you would use: df$sulfate . However, this method requires you to know the exact name of the column at the time of writing the code. It does not work when the column name is stored in a variable.
+* Using Double Brackets ([[ ]]): The double brackets allow you to access columns dynamically using a variable. For example, if you have a variable pollutant that contains the name of the column you want to access, you can do: df[[pollutant]].  This method is particularly useful when you want to write functions that can handle different column names based on user input.
+```{r}
+source("pollutantmean.R")
+pollutantmean("specdata", "sulfate", 1:10)
+pollutantmean("specdata", "nitrate", 70:72)
+pollutantmean("specdata", "sulfate", 34)
+pollutantmean("specdata", "nitrate")
+```
+Write a function that reads a directory full of files and reports the number of completely observed cases in each data file. The function should return a data frame where the first column is the name of the file and the second column is the number of complete cases
+
+```{r}
+source("complete.R")
+cc <- complete("specdata", c(6, 10, 20, 34, 100, 200, 310))
+print(cc$nobs)
+```
+```{r}
+source("complete.R")
+cc <- complete("specdata", 54)
+print(cc$nobs)
+```
+```{r}
+RNGversion("3.5.1")  
+set.seed(42)
+cc <- complete("specdata", 332:1)
+use <- sample(332, 10)
+print(cc[use, "nobs"])
+```
+
+Write a function that takes a directory of data files and a threshold for complete cases and calculates the correlation between sulfate and nitrate for monitor locations where the number of completely observed cases (on all variables) is greater than the threshold. The function should return a vector of correlations for the monitors that meet the threshold requirement. If no monitors meet the threshold requirement, then the function should return a numeric vector of length 0
+
+### Learnings
+
+* If sulfate or nitrate contain NAs, cor() will return NA. &rarr; You should add use="complete.obs":
+
+```{r}
+## 
+source("corr.R")
+
+cr <- corr("specdata")         
+cr <- sort(cr)   
+RNGversion("3.5.1")
+set.seed(868)                
+out <- round(cr[sample(length(cr), 5)], 4)
+print(out)
+```
+```{r}
+cr <- corr("specdata", 129)                
+cr <- sort(cr)                
+n <- length(cr)    
+RNGversion("3.5.1")
+set.seed(197)                
+out <- c(n, round(cr[sample(n, 5)], 4))
+print(out)
+```
+```{r}
+cr <- corr("specdata", 2000)                
+n <- length(cr)                
+cr <- corr("specdata", 1000)                
+cr <- sort(cr)
+print(c(n, round(cr, 4)))
+```
+
