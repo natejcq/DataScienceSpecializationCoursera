@@ -1,0 +1,223 @@
+---
+title: "Module 3"
+output: pdf_document
+---
+
+# Loop functions
+
+Writing for, while loops is useful when programming but not particularly easy when working interactively on the command line. There are some functions which implement looping to make life easier. 
+
+* ```lapply```: Loop over a list and evaluate a function on each element.   
+* ```sapply```: Same as lapply but try to simplify the result.
+* ```apply````: Apply a function over the margins of an array.
+* ```tapply```: Apply a function over subsets of a vector.
+* ```mapply```: Multivariate version of lapply.
+
+An auxiliary function ```split``` is also useful, particularly in conjunction with ```lapply``.
+
+## lapply
+
+lapply takes three arguments; a list, a function (or name of a function) and other arguments via its ... argument. The ... is used to pass arguments that go with the function that will be applied to each element of the list. If the first argument is not a list, it will be coerced to a list using as.list(). If coercion is not possible, R will return an error. The actual looping is done internally in C code.
+```{r}
+lapply
+```
+lapply will always return a list. An illustration is as follows: 
+```{r}
+x <- list(a=1:5, b=rnorm(10))
+lapply(x, mean)
+```
+The result is a list; with the mean function applied to each element of the list.
+```{r}
+x <- list(a=1:4, b=rnorm(10), c=rnorm(20,1), d=rnorm(100,5))
+lapply(x,mean)
+```
+While each element of the list was a numeric vector, lapply will return a vector with a single number for each element of the list. 
+```{r}
+x <- 1:4
+lapply(x, runif)
+```
+runif generates uniform random variables. The first argument to runif is the number of random variables to generate. So the result is a list of vectors, with 1,2,3,4 random numbers respectively. By default runif will generate numbers between zero and one only.
+
+We can give additional arguments to the function by appending those arguments to the lapply function. 
+```{r}
+x <- 1:4
+lapply(x, runif, min=0, max=10)
+```
+A list with two matrices
+```{r}
+x <- list(a = matrix(1:4, 2,2), b = matrix(1:6, 3,2))
+x
+```
+An anonymous function for extracting the first column if each matrix; defined inside lapply.
+```{r}
+lapply(x, function(elt){ elt[,1]})
+```
+
+## sapply
+
+The ```sapply``` function will try to simplify the result of ```lapply``` if possible. If the result is a list where every element is of length 1, a vector is returned. If the result is a list where every element is a vector of the same length (>1) then a matrix is returned. If it cannot figure things out, a list is returned.
+An example is shown below 
+
+```{r}
+x <- list(a=1:4, b=rnorm(10), c=rnorm(20,1), d=rnorm(100,5))
+sapply(x,mean)
+```
+
+## apply
+
+The ``apply`` function is used to evaluate a function (often an anonymous one) over the margins of an array. It is most often used to apply a function to the rows or columns of a matrix. It can also be used with general arrays. It is not much faster than a loop for arrays but does the job in one line
+```{r}
+str(apply)
+```
+Here, X is an array. MARGIN is an integer vector indicating which margin is to be retained. FUN is the function to be applied and the .. .is for arguments to be passed to FUN. 
+```{r}
+## Create a matrix of 20 rows and 10 columns
+x <- matrix(rnorm(200), 20, 10)
+
+## Collapse the rows, retain the columns and apply mean on all rows of each column
+apply(x, 2, mean)
+
+## Collapse the columns, retain the rows and apply mean on all columns of each  row
+apply(x, 1, mean)
+
+```
+For sums and meansa on matrix dimensions, the following functions exist : rowSums, colSums, rowMeans, colMeans.
+```
+rowSums = apply(x, 1, sum)
+colSums = apply(x, 2, sum)
+rowMeans = apply(x, 1, mean)
+colMeans = apply(x, 2, mean)
+```
+While they are equivalent to the apply functions, they are much faster as they have been optimized specifically for that operation. However, unless the matrix is particularly large, the speed gain will not be noticeable. 
+
+Get the quantiles (25th and 75th) of each row of a matrix
+```{r}
+## Create a matrix of 20 rows and 10 columns
+x <- matrix(rnorm(200), 20, 10)
+
+apply(x, 1,quantile, probs=c(0.25,0.75))
+```
+Creating an array with 2 rows and 2 columns with its third dimension being 10. Imagine this to be a set of ten 2 x 2 matrices stacked together. 
+```{r}
+a <- array(rnorm(2 * 2 * 10), c(2,2,10))
+a
+```
+Now, I want to find the averages of each position in the 2 x 2 matrix. So when using the apply function, we'll need to retain the first two dimensions
+```{r}
+apply(a, c(1,2), mean)
+```
+## tapply
+
+This is used to apply functions over a subset of a vector.
+```{r}
+str(tapply)
+```
+Here, X is an vector INDEX is a factor or list of factors. FUN is the function to be applied and the .. .is for arguments to be passed to FUN. simplify is a boolean argument that decides whether the result of tapply should be simplified futher.
+```{r}
+x <- c(rnorm(10), runif(10), rnorm(10,1))
+x
+factor <- gl(3,10)
+factor
+```
+Using the tapply function on the vector x with factor
+```{r}
+tapply(x, factor, mean)
+tapply(x, factor, mean, simplify=FALSE)
+tapply(x, factor, range)
+```
+
+## mapply
+
+The```mapply``` function is a multi-variate version of the apply function which applies a function in parallel over a set of arguments. 
+```{r}
+str(mapply)
+```
+Here, X is an array, FUN is the function, MoreArgs is for arguments to be passed to FUN. The ... is the various arguments to apply the function over.
+```{r}
+list(rep(1,4), rep(2,3), rep(3,2),rep(4,1))
+```
+Instead, we can use
+```{r}
+mapply(rep, 1:4, 4:1)
+```
+
+```{r}
+noise <- function(n, mean, sd){
+      rnorm(n,mean,sd)
+}
+
+noise(5,1,2) # 5 variables with mean 1 and standard deviation 2
+```
+Vectorizing a function
+```{r}
+noise(1:5, 1:5, 2)
+```
+Here, it was expected to have 1 number with mean 1, 2 numbers with mean 2 and so on; and each set would have a standard deviation of 2. However it just generates some random normal noise.  The function does not work with a vector of arguments.
+```{r}
+mapply(noise, 1:5, 1:5, 2)
+```
+mapply therefore allows you to vectorize a function that does not allow for vector inputs.
+
+## split
+
+Whie ```split``` is not a loop function itself, it is often used in conjunction with functions like lapply or sapply. It takes a vector or other objects and splits it into groups determined by a factor or list of factors. 
+```{r}
+str(split)
+```
+x is a vector, list or data frame. f is a factor or a list of factors. drop indicates whether empty factors levels should be dropped. 
+
+```{r}
+x <- c(rnorm(10), runif(10), rnorm(10, 1))
+f <-  gl(3,10)
+split(x,f)
+```
+Using ```lapply``` in conjunction with the split
+```{r}
+lapply(split(x,f), mean)
+```
+Consider the following dataset:
+```{r}
+library(datasets)
+head(airquality)
+```
+Now lets try to get the mean values for each month in the dataset.
+
+```{r}
+data <- airquality
+factor <- airquality$Month
+s <- split(data, factor)
+## Don't directly apply mean function because we need only the mean for Ozone Solar Wind Temp
+lapply(s, function(x) colMeans(x[, c("Ozone", "Solar.R", "Wind")]))
+```
+Alternatively, since each list has 3 elements the sapply function will create a matrix with 3 rows.  
+```{r}
+sapply(s, function(x) colMeans(x[, c("Ozone", "Solar.R", "Wind")]))
+```
+```{r}
+sapply(s, function(x) colMeans(x[, c("Ozone", "Solar.R", "Wind")], na.rm = TRUE))
+```
+When dealing with multiple factors (combination of levels within those factors), use the interaction method to see the number of unique levels possible.
+```{r}
+x <- rnorm(10)
+f1 <- gl(2,5)
+f2 <- gl(5,2)
+interaction(f1,f2)
+```
+Interactions can create empty levels
+```{r}
+str(split(x, list(f1,f2)))
+```
+Empty levels can be dropped.
+```{r}
+str(split(x, list(f1,f2), drop=TRUE))
+
+```
+
+
+# Debugging
+
+## Diagnosing the problem
+
+## Basic tools
+
+## Using the tools
